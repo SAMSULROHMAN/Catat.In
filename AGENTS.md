@@ -31,8 +31,7 @@
 - Satu-satunya model: `User` (menggunakan atribut PHP 8 `#[Fillable]`, `#[Hidden]`)
 - Satu-satunya route: `GET /` mengembalikan view `welcome`
 - Belum ada controller, command, atau job kustom
-- `database/migrations/` — tabel users, cache, jobs, categories, transactions, budgets sudah dibuat
-- Model migrated: `User` (kolom `password_hash` bukan `password`), belum ada model untuk categories/transactions/budgets
+- `database/migrations/` — tabel users, cache, jobs sudah dibuat
 
 ## Konvensi
 - Atribut PHP 8 untuk konfigurasi model Eloquent (`#[Fillable]`, `#[Hidden]`, bukan properti `$fillable`)
