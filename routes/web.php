@@ -7,7 +7,5 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home', function () {
-        return view('welcome');
-    })->name('home');
+    Route::view('/home', 'dashboard')->name('home');
 });
