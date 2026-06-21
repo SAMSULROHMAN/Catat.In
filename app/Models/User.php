@@ -29,4 +29,9 @@ class User extends Authenticatable
             'password_hash' => 'hashed',
         ];
     }
+
+    public function getAuthPassword(): string
+    {
+        return $this->password_hash;
+    }
 }
