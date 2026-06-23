@@ -16,6 +16,7 @@
                 <a href="{{ route('home') }}" class="font-semibold text-lg">{{ config('app.name', 'Catat.In') }}</a>
                 <a href="{{ route('home') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Dashboard</a>
                 <a href="{{ route('transactions.index') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Riwayat</a>
+                <a href="{{ route('budgets.index') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Budget</a>
             </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -25,6 +26,7 @@
     </nav>
 
     <main class="max-w-5xl mx-auto px-4 py-6">
+        <div id="globalNotification" class="hidden mb-4 p-4 rounded-sm text-sm font-medium"></div>
         @yield('content')
     </main>
 
@@ -134,6 +136,19 @@
     function toDateInputValue(dateStr) {
         if (!dateStr) return '';
         return dateStr.slice(0, 10);
+    }
+
+    function showBudgetNotification(notification) {
+        var banner = document.getElementById('globalNotification');
+        if (!banner) return;
+        banner.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-yellow-100', 'text-yellow-800', 'bg-blue-100', 'text-blue-800');
+        if (notification.level === 'warning') {
+            banner.classList.add('bg-yellow-100', 'text-yellow-800');
+        } else if (notification.level === 'danger') {
+            banner.classList.add('bg-red-100', 'text-red-800');
+        }
+        banner.textContent = notification.message;
+        setTimeout(function () { banner.classList.add('hidden'); }, 8000);
     }
 
     function todayStr() {
@@ -250,11 +265,14 @@
             if (!r.ok) return r.json().then(function (err) { throw err; });
             return r.json();
         })
-        .then(function () {
+        .then(function (res) {
             document.getElementById('transactionForm').classList.add('hidden');
             document.getElementById('formSuccess').classList.remove('hidden');
             if (typeof loadTransactions === 'function') loadTransactions();
             if (typeof loadDashboard === 'function') loadDashboard();
+            if (res.notification && typeof showBudgetNotification === 'function') {
+                showBudgetNotification(res.notification);
+            }
         })
         .catch(function (err) {
             if (err.errors) {

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Budget;
 use App\Models\Transaction;
+use App\Services\BudgetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -46,7 +48,31 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
+        $notification = null;
+
+        if ($validated['type'] === 'expense') {
+            $budget = Budget::forUser($request->user()->id)
+                ->forMonth(Budget::currentMonth())
+                ->forCategory($validated['category_id'])
+                ->first();
+
+            if ($budget) {
+                $budget->load('category');
+                $notification = app(BudgetService::class)->checkNotification(
+                    $budget,
+                    (float) $validated['amount']
+                );
+            }
+        }
+
         $transaction = $request->user()->transactions()->create($validated);
+
+        if ($notification) {
+            return response()->json([
+                'data' => $transaction,
+                'notification' => $notification,
+            ], 201);
+        }
 
         return response()->json($transaction, 201);
     }
