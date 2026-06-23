@@ -17,8 +17,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('categories/{category}/favorite', [CategoryController::class, 'toggleFavorite'])
             ->name('categories.favorite');
 
-        Route::get('transactions/suggest-category', [TransactionController::class, 'suggestCategory'])
-            ->name('transactions.suggest-category');
         Route::apiResource('transactions', TransactionController::class);
         Route::post('transactions/{transaction}/duplicate', [TransactionController::class, 'duplicate'])
             ->name('transactions.duplicate');
