@@ -270,6 +270,12 @@
             document.getElementById('formSuccess').classList.remove('hidden');
             if (typeof loadTransactions === 'function') loadTransactions();
             if (typeof loadDashboard === 'function') loadDashboard();
+            if (typeof loadSummary === 'function') loadSummary();
+            if (typeof loadExpensePieChart === 'function') loadExpensePieChart();
+            if (typeof loadMonthlyBarChart === 'function') loadMonthlyBarChart();
+            if (typeof loadCashFlow === 'function') loadCashFlow();
+            if (typeof loadWeeklySummary === 'function') loadWeeklySummary();
+            if (typeof loadRecentTransactions === 'function') loadRecentTransactions();
             if (res.notification && typeof showBudgetNotification === 'function') {
                 showBudgetNotification(res.notification);
             }
