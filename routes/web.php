@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,5 +27,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('budgets/summary', [BudgetController::class, 'summary'])->name('budgets.summary');
         Route::post('budgets/copy-previous', [BudgetController::class, 'copyPrevious'])->name('budgets.copy-previous');
         Route::apiResource('budgets', BudgetController::class);
+
+        Route::prefix('dashboard')->group(function () {
+            Route::get('summary', [DashboardController::class, 'summary'])->name('dashboard.summary');
+            Route::get('expense-by-category', [DashboardController::class, 'expenseByCategory'])->name('dashboard.expense-by-category');
+            Route::get('monthly-comparison', [DashboardController::class, 'monthlyComparison'])->name('dashboard.monthly-comparison');
+            Route::get('cash-flow', [DashboardController::class, 'cashFlow'])->name('dashboard.cash-flow');
+            Route::get('weekly-summary', [DashboardController::class, 'weeklySummary'])->name('dashboard.weekly-summary');
+        });
     });
 });
