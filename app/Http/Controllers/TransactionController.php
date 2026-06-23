@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Transaction;
+use App\Services\CategorySuggestionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -30,7 +32,27 @@ class TransactionController extends Controller
         return response()->json(['data' => $transactions]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function suggestCategory(Request $request, CategorySuggestionService $suggestionService): JsonResponse
+    {
+        $request->validate(['note' => ['nullable', 'string', 'max:1000']]);
+
+        $note = (string) $request->input('note', '');
+
+        $suggestedCategory = $suggestionService->suggestWithCategory(
+            $request->user()->id,
+            $note
+        );
+
+        return response()->json([
+            'suggested_category' => $suggestedCategory ? [
+                'id' => $suggestedCategory->id,
+                'name' => $suggestedCategory->name,
+                'icon' => $suggestedCategory->icon,
+            ] : null,
+        ]);
+    }
+
+    public function store(Request $request, CategorySuggestionService $suggestionService): JsonResponse
     {
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
@@ -44,6 +66,14 @@ class TransactionController extends Controller
 
         if (! $category) {
             return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        if (! empty($validated['note'])) {
+            $suggestionService->logSuggestion(
+                $request->user()->id,
+                $validated['note'],
+                $validated['category_id']
+            );
         }
 
         $transaction = $request->user()->transactions()->create($validated);

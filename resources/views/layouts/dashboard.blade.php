@@ -60,6 +60,10 @@
                         class="w-full px-3 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm bg-white dark:bg-[#161615] text-[#1b1b18] dark:text-[#EDEDEC] focus:outline-none focus:ring-1 focus:ring-[#f53003]">
                         <option value="">Pilih kategori</option>
                     </select>
+                    <p class="text-green-600 dark:text-green-400 text-xs mt-1 hidden" id="suggestionInfo">
+                        Saran: <span id="suggestedCategoryName"></span>
+                        <button type="button" id="applySuggestion" class="underline hover:no-underline ml-1">Gunakan</button>
+                    </p>
                     <p class="text-red-500 text-sm mt-1 hidden" id="categoryError"></p>
                 </div>
 
@@ -187,6 +191,50 @@
     }
 
     loadCategories();
+
+    var suggestTimeout = null;
+
+    document.getElementById('note')?.addEventListener('input', function () {
+        clearTimeout(suggestTimeout);
+        var note = this.value.trim();
+        if (!note) {
+            document.getElementById('suggestionInfo').classList.add('hidden');
+            return;
+        }
+        suggestTimeout = setTimeout(function () {
+            fetch(API_BASE + '/transactions/suggest-category?note=' + encodeURIComponent(note), { credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (res) {
+                    var info = document.getElementById('suggestionInfo');
+                    var nameEl = document.getElementById('suggestedCategoryName');
+                    if (res.suggested_category) {
+                        nameEl.textContent = (res.suggested_category.icon || '') + ' ' + res.suggested_category.name;
+                        info.classList.remove('hidden');
+                    } else {
+                        info.classList.add('hidden');
+                    }
+                })
+                .catch(function () {});
+        }, 500);
+    });
+
+    document.getElementById('applySuggestion')?.addEventListener('click', function () {
+        var note = document.getElementById('note').value.trim();
+        if (!note) return;
+        fetch(API_BASE + '/transactions/suggest-category?note=' + encodeURIComponent(note), { credentials: 'same-origin' })
+            .then(function (r) { return r.json(); })
+            .then(function (res) {
+                if (res.suggested_category) {
+                    document.getElementById('category_id').value = res.suggested_category.id;
+                    document.getElementById('suggestionInfo').classList.add('hidden');
+                }
+            })
+            .catch(function () {});
+    });
+
+    document.getElementById('category_id')?.addEventListener('change', function () {
+        document.getElementById('suggestionInfo').classList.add('hidden');
+    });
 
     document.getElementById('fab')?.addEventListener('click', function () { openModal(null); });
 
