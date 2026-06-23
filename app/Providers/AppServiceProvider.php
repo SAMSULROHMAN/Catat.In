@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\CategorySuggestionService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -12,7 +13,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(CategorySuggestionService::class, function () {
+            return new CategorySuggestionService;
+        });
     }
 
     /**
