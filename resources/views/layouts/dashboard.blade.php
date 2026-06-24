@@ -17,6 +17,7 @@
                 <a href="{{ route('home') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Dashboard</a>
                 <a href="{{ route('transactions.index') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Riwayat</a>
                 <a href="{{ route('budgets.index') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Budget</a>
+                <a href="{{ route('exports.index') }}" class="text-sm text-[#706f6c] dark:text-[#A1A09A] hover:text-[#1b1b18] dark:hover:text-[#EDEDEC]">Ekspor</a>
             </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
